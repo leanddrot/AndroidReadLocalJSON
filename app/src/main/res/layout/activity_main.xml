@@ -39,8 +39,7 @@
         android:layout_alignParentEnd="true"
         android:maxLines="1"
         android:maxLength="50"
-        android:textColor="#ffe6e6e6"
-        android:background="#ff131313" />
+        android:textColor="#ffe6e6e6" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -55,8 +54,7 @@
         android:layout_alignEnd="@+id/editText_user"
         android:maxLines="1"
         android:maxLength="50"
-        android:textColor="#ffe6e6e6"
-        android:background="#ff131313" />
+        android:textColor="#ffe6e6e6" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -76,7 +74,7 @@
     <Button
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:text="Connect"
+        android:text="Conectar"
         android:id="@+id/button_connect"
         android:background="#ffa2a2a2"
         android:layout_below="@+id/checkBox_save"
