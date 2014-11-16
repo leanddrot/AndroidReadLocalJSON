@@ -41,77 +41,60 @@ public class MainActivity extends Activity {
 
         final EditText et_user = (EditText)findViewById(R.id.editText_user);
         final EditText et_pass = (EditText)findViewById(R.id.editText_pass);
-        Button button_connect = (Button)findViewById(R.id.button_connect);
+        final Button button_connect = (Button)findViewById(R.id.button_connect);
         final CheckBox cb_save = (CheckBox)findViewById(R.id.checkBox_save);
+        final Activity activity = this;
 
-        String json = loadJSON();
-        Log.v("JSON leido", json);
+        final GestionConfigRepositorio gestionConfigRepositorio = new GestionConfigRepositorio();
+        final GestionConfig config = gestionConfigRepositorio.recuperarConfiguracion(this);
 
-
-        try {
-            obj = new JSONObject(json);
-            urlRestful = obj.getString("urlRestful");
-            user = obj.getString("user");
-            pass = obj.getString("pass");
-            save = obj.getString("save");
-            et_user.setText(user);
-            et_pass.setText(pass);
-            if (save.equals("true")){
-                cb_save.setChecked(true);
-            }
-
-        } catch (JSONException e) {
-
-            e.printStackTrace();
-        }
+        et_user.setText(config.getUser());
+        et_pass.setText(config.getPass());
+        cb_save.setChecked(config.getSave());
 
         button_connect.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                try {
 
-                    obj.put("user", et_user.getText());
+                GestionConfig config = gestionConfigRepositorio.recuperarConfiguracion(activity);
 
-                    if (cb_save.isChecked()){
-                        obj.put("pass", et_pass.getText());
-                        obj.put("save", "true");
-                    } else {
-                        obj.put("pass", "");
-                        obj.put("save", "false");
-                    }
-
-                    FileOutputStream fos = openFileOutput("config.json", Context.MODE_PRIVATE);
-                    fos.write(obj.toString().getBytes());
-                    fos.close();
-
-                    Log.v("nuevo JSON",obj.toString());
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if (urlRestful.isEmpty()) {
+                if (config.getUrlRestful().isEmpty()){
                     Context context = getApplicationContext();
-                    CharSequence text = "No ha configurado una URL. Hágalo desde el menu \"Settings\" y reinicie la aplicación";
+                    CharSequence text = "No ha configurado una URL. Hágalo desde el menu \"Settings\"";
                     int duration = Toast.LENGTH_LONG;
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
+                    return;
                 }
+
+                config.setUser(et_user.getText().toString());
+
+
+                if (cb_save.isChecked()){
+                    config.setPass(et_pass.getText().toString());
+                    config.setSave(true);
+                } else {
+                    config.setPass("");
+                    config.setSave(false);
+                }
+                Log.v("user",config.getUser());
+                Log.v("pass",config.getPass());
+                Log.v("save",config.getSave().toString());
+                Log.v("url",config.getUrlRestful());
+
+                gestionConfigRepositorio.guardarConfiguracion(activity, config);
 
 
             }
         });
 
-        Log.v("JSON", json);
 
-        }
+    }
 
 
-        @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -136,27 +119,6 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String loadJSON() {
-        String json = null;
-        try {
-            FileInputStream fis = openFileInput("config.json");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
 
-            json = sb.toString();
 
-        } catch (FileNotFoundException e) {
-            json = "{ \"urlRestful\" : \"\",  \"user\" : \"\",  \"pass\" : \"\",  \"save\" : \"\"}";
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return json;
-
-    }
 }

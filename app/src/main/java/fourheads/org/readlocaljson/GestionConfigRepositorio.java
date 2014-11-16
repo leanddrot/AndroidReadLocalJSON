@@ -1,6 +1,8 @@
 package fourheads.org.readlocaljson;
 
 import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +10,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -16,11 +19,11 @@ import java.io.InputStreamReader;
  */
 public class GestionConfigRepositorio{
 
-    public GestionConfig recuperarConfiguracion(){
+    public GestionConfig recuperarConfiguracion(Activity activity){
 
         GestionConfig gestionConfig = new GestionConfig();
 
-        String json = leerJSON();
+        String json = leerJSON(activity);
 
         try {
 
@@ -45,17 +48,37 @@ public class GestionConfigRepositorio{
         return gestionConfig;
     }
 
-    public void guardarConfiguracion(){
+    public void guardarConfiguracion(Activity activity, GestionConfig config){
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user", config.getUser());
+            obj.put("pass", config.getPass());
+            obj.put("urlRestful", config.getUrlRestful());
+            obj.put("save", config.getSave().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.v("JSON", obj.toString());
+
+        try {
+            FileOutputStream fos = activity.openFileOutput("config.json", Context.MODE_PRIVATE);
+            fos.write(obj.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private String leerJSON(){
+    private String leerJSON(Activity activity){
 
         String json = null;
 
         Activity a = new Activity();
         try {
-            FileInputStream fis = a.openFileInput("config.json");
+            FileInputStream fis = activity.openFileInput("config.json");
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
