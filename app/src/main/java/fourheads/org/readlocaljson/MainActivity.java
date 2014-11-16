@@ -28,12 +28,6 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends Activity {
 
-    JSONObject obj = null;
-    String user;
-    String pass;
-    String urlRestful;
-    String save;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +53,15 @@ public class MainActivity extends Activity {
 
                 GestionConfig config = gestionConfigRepositorio.recuperarConfiguracion(activity);
 
-                if (config.getUrlRestful().isEmpty()){
-                    Context context = getApplicationContext();
-                    CharSequence text = "No ha configurado una URL. Hágalo desde el menu \"Settings\"";
-                    int duration = Toast.LENGTH_LONG;
+                if (et_pass.getText().toString().isEmpty()){
 
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                    mostrarMensaje("El campo \"pass\" no puede quedar en blanco");
+                    return;
+                }
+
+                if (config.getUrlRestful().isEmpty()){
+
+                    mostrarMensaje("No ha configurado una URL. Hágalo desde el menu \"Settings\"");
                     return;
                 }
 
@@ -90,7 +86,15 @@ public class MainActivity extends Activity {
             }
         });
 
+    }
 
+    private void mostrarMensaje(CharSequence text) {
+        Context context = getApplicationContext();
+
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
 
